@@ -170,6 +170,26 @@ class QLearningAgent:
 
         # Q-Learning update formula
         self.q_table[old_state][action] = (1 - self.alpha) * old_q_value + self.alpha * (reward + self.gamma * max_future_q)
+        
+    def update_q_table_sarsa(self, state, action, reward, new_state, a_prime, agent):
+        # Extract relevant state details
+        old_pos = state['positions'][agent]
+        new_pos = new_state['positions'][agent]
+        old_carrying = state['carrying'][agent]
+        new_carrying = new_state['carrying'][agent]
+
+        # Convert positions and carrying status to state tuples
+        old_state = (old_pos[0], old_pos[1], old_carrying)
+        new_state_tuple = (new_pos[0], new_pos[1], new_carrying)
+
+        # Compute Q-value update
+        old_q_value = self.q_table[old_state][action]
+        # For SARSA, use the Q-value of the next action the agent is going to take
+        next_q_value = self.q_table[new_state_tuple][a_prime] if a_prime else 0
+
+        # SARSA update formula
+        self.q_table[old_state][action] = old_q_value + self.alpha * (reward + self.gamma * next_q_value - old_q_value)
+
     
     def save_q_table_to_csv(self, filename="q_table.csv"):
         with open(filename, mode='w', newline='') as file:
@@ -212,15 +232,19 @@ class QLearningAgent:
             json.dump(serializable_q_table, f, indent=4)
 
 class GridWorldSimulation:
-    def __init__(self, total_steps, seed=None):
+    def __init__(self, total_steps, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=None):
         self.total_steps = total_steps
+        self.initial_policy = initial_policy
+        self.subsequent_policy = subsequent_policy
+        self.change_step = change_step
         self.seed = seed
         self.environment = Environment()
         self.agent = QLearningAgent(alpha, gamma)
+        self.current_policy = initial_policy
         # Metrics for plotting
         self.reward_history = []
         self.cumulative_rewards = 0
-        self.reset_counts = []  # List to store the number of actions between resets
+        self.reset_counts = []
         self.action_count = 0
 
     def run(self):
@@ -229,19 +253,12 @@ class GridWorldSimulation:
             random.seed(self.seed)
 
         self.environment.reset()
-        actions_since_last_reset = 0  # Track actions since last reset
-
-        policies = [('PRandom', 500), ('PRandom', 8500), ('PGreedy', 8500), ('PExploit', 8500)]
-        current_policy, steps_for_policy = policies.pop(0)
+        actions_since_last_reset = 0
         current_step = 0
 
         while current_step < self.total_steps:
-            if current_step >= steps_for_policy:
-                if policies:
-                    current_policy, steps = policies.pop(0)
-                    steps_for_policy += steps
-                else:
-                    break
+            if current_step == self.change_step:
+                self.current_policy = self.subsequent_policy
 
             img = self.create_grid_image()
             cv2.imshow('Grid World', img)
@@ -250,7 +267,7 @@ class GridWorldSimulation:
                 break
 
             for agent in AGENT_NAMES:
-                action = self.agent.select_action(self.environment.get_state(), agent, current_policy)
+                action = self.agent.select_action(self.environment.get_state(), agent, self.current_policy)
                 if action:
                     self.action_count += 1
                     actions_since_last_reset += 1
@@ -265,18 +282,12 @@ class GridWorldSimulation:
             if all(self.environment.blocks[loc] == CAPACITY for loc in DROPOFF_LOCATIONS):
                 self.environment.reset()
                 self.reset_counts.append(actions_since_last_reset)
-                actions_since_last_reset = 0  # Reset the action count after a terminal state is reached
-
-            # if current_step % 1000 == 0 or current_step == self.total_steps - 1:
-            #     filename = f"q_table_final_step_{current_step}_seed_{self.seed}.json"
-            #     self.agent.save_q_table(filename)
+                actions_since_last_reset = 0
 
             if current_step % 1000 == 0 or current_step == self.total_steps - 1:
-                csv_filename = f"q_table_step__seed_{self.seed}.csv"
-                image_filename_prefix = f"q_table_step_{current_step}_seed_{self.seed}"
+                csv_filename = f"q_table_policy_{self.subsequent_policy}_seed_{self.seed}.csv"
                 self.agent.save_q_table_to_csv(csv_filename)
-                self.agent.plot_q_table()  # This will save images
-
+                self.agent.plot_q_table()
 
             current_step += 1
 
@@ -334,15 +345,18 @@ def plot_reset_statistics(reset_counts):
     plt.grid(True)
     plt.show()
 
-def run_and_plot_simulation(total_steps, seed=None):
-    # Initialize and run the simulation
-    simulation = GridWorldSimulation(total_steps, seed)
-    total_rewards, action_count, reset_counts  = simulation.run()
+def run_and_plot_simulation(total_steps, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=None):
+    # Initialize and run the simulation with dynamic policy switching
+    simulation = GridWorldSimulation(total_steps, initial_policy, subsequent_policy, change_step, seed)
+    total_rewards, action_count, reset_counts = simulation.run()
     print(f"Total Rewards: {total_rewards}, Total Actions Taken: {action_count}")
 
-    # Plot the cumulative rewards history
+    # Plot the cumulative rewards history and reset statistics
     plot_rewards(simulation.reward_history)
     plot_reset_statistics(reset_counts)
 
-# Run the simulation and visualize the results
-run_and_plot_simulation(9000, seed=43)
+# Example of running the simulation with specific policies
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=42)
+
