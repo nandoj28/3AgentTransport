@@ -55,7 +55,11 @@ class GridWorldSimulation:
                     self.cumulative_rewards += reward
 
                     # Update Q-table here (either Q-learning or SARSA based on your need)
-                    self.agent.update_q_table(new_state, action, reward, self.environment.get_state(), agent)
+                    # self.agent.update_q_table(new_state, action, reward, self.environment.get_state(), agent)
+
+                    # Comment out code for SARSA
+                    new_action = self.agent.select_action(new_state, agent, self.current_policy)  # SARSA requires the next action
+                    self.agent.update_q_table_sarsa(new_state, action, reward, self.environment.get_state(), new_action, agent)                    
 
                 # Increment current_step here to ensure it counts each agent action individually
                 current_step += 1

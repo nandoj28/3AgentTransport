@@ -11,5 +11,5 @@ AGENT_COLORS = {
     'blue': (255, 0, 0),
     'black': (0, 0, 0)
 }
-alpha = 0.3
+alpha = 0.45
 gamma = 0.5
