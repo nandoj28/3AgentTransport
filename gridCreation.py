@@ -11,7 +11,7 @@ from constants import REWARDS, AGENT_COLORS, AGENT_NAMES, alpha, gamma
 class GridWorldSimulation:
     def __init__(self, total_steps, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=None):
         self.total_steps = total_steps
-        self.initial_policy = initial_policy
+        # self.initial_policy = initial_policy
         self.subsequent_policy = subsequent_policy
         self.change_step = change_step
         self.seed = seed
@@ -34,19 +34,16 @@ class GridWorldSimulation:
         current_step = 0
 
         while current_step < self.total_steps:
-            if current_step == self.change_step:
-                self.current_policy = self.subsequent_policy
-
             img = self.create_grid_image()
             cv2.imshow('Grid World', img)
-            key = cv2.waitKey(10)
+            key = cv2.waitKey(1)
             if key & 0xFF == ord('q'):
                 break
 
-            # Process each agent's action as an individual step
-            for agent in ['red', 'blue', 'black']:  # Explicit ordering
-                if current_step >= self.total_steps:
-                    break  # Exit if the total number of steps is reached
+            for agent in AGENT_NAMES:
+                if current_step == self.change_step:
+                    self.current_policy = self.subsequent_policy
+                    print(f"Switching to policy: {self.current_policy}")
 
                 action = self.agent.select_action(self.environment.get_state(), agent, self.current_policy)
                 if action:
@@ -57,26 +54,33 @@ class GridWorldSimulation:
                     reward = self.compute_reward(action)
                     self.cumulative_rewards += reward
 
-                    # Update the Q-table
+                    # Update Q-table here (either Q-learning or SARSA based on your need)
                     self.agent.update_q_table(new_state, action, reward, self.environment.get_state(), agent)
 
-                self.reward_history.append(self.cumulative_rewards)
+                # Increment current_step here to ensure it counts each agent action individually
+                current_step += 1
+                if current_step >= self.total_steps:
+                    break  # Exit if the total number of steps is reached
 
-                # Check if it's time to reset the environment based on the condition of all blocks delivered
-                if all(self.environment.blocks[loc] == CAPACITY for loc in DROPOFF_LOCATIONS):
-                    self.environment.reset()
-                    self.reset_counts.append(actions_since_last_reset)
-                    actions_since_last_reset = 0
+                if current_step == self.change_step:
+                    self.current_policy = self.subsequent_policy
+                    print(f"Policy changed to {self.current_policy} at step {current_step}")
 
-                current_step += 1  # Increment the step counter after each action
+            self.reward_history.append(self.cumulative_rewards)
 
-                if current_step % 1000 == 0 or current_step == self.total_steps - 1:
-                    # csv_filename = f"q_table_policy_{self.subsequent_policy}_seed_{self.seed}.csv"
-                    self.agent.save_q_table_to_csv()
-                    self.agent.plot_q_table()
+            if all(self.environment.blocks[loc] == CAPACITY for loc in DROPOFF_LOCATIONS):
+                self.environment.reset()
+                self.reset_counts.append(actions_since_last_reset)
+                actions_since_last_reset = 0
+
+            if current_step % 1000 == 0 or current_step == self.total_steps - 1:
+                # Save Q-table and plot periodically
+                self.agent.save_q_table_to_csv()
+                self.agent.plot_q_table()
 
         cv2.destroyAllWindows()
         return self.cumulative_rewards, self.action_count, self.reset_counts
+
 
 
     def create_grid_image(self, cell_size=50):

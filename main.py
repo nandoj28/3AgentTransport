@@ -34,13 +34,14 @@ def run_and_plot_simulation(total_steps, initial_policy='PRandom', subsequent_po
 '''
 Expirement 1 with first seed
 '''
-run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=42)
-# run_and_plot_simulation(9000, algorithm = "Qlearning", initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
-# run_and_plot_simulation(9000, algorithm = "Qlearning", initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=42)
+run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
 
-# '''
-# Expirement 1 with second seed
-# '''
-# run_and_plot_simulation(9000, algorithm = "Qlearning", initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=43)
-# run_and_plot_simulation(9000, algorithm = "Qlearning", initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
-# run_and_plot_simulation(9000, algorithm = "Qlearning", initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=43)
+
+'''
+Expirement 1 with second seed
+'''
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
