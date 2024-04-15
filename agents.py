@@ -123,16 +123,31 @@ class Agent:
         # SARSA update formula
         self.q_table[old_state][action] = old_q_value + self.alpha * (reward + self.gamma * next_q_value - old_q_value)
 
-    def save_q_table_to_csv(self, filename="q_table.csv"):
-        with open(filename, mode='w', newline='') as file:
+    def save_q_table_to_csv(self):
+        # File paths for the two states
+        filename_carrying = "q_table_carrying.csv"
+        filename_not_carrying = "q_table_not_carrying.csv"
+
+        # Headers for the CSV files
+        headers = ['State (x, y, carrying)', 'North', 'South', 'East', 'West', 'Pickup', 'Dropoff']
+
+        # Save Q-table for carrying state
+        with open(filename_carrying, mode='w', newline='') as file:
             writer = csv.writer(file)
-            # Write headers
-            headers = ['State (x, y, carrying)', 'North', 'South', 'East', 'West', 'Pickup', 'Dropoff']
             writer.writerow(headers)
-            # Write data
             for state, actions in self.q_table.items():
-                row = [state] + [actions[action] for action in ACTIONS]
-                writer.writerow(row)
+                if state[2]:  # Check if the carrying flag is True
+                    row = [state] + [actions[action] for action in ACTIONS]
+                    writer.writerow(row)
+
+        # Save Q-table for not carrying state
+        with open(filename_not_carrying, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(headers)
+            for state, actions in self.q_table.items():
+                if not state[2]:  # Check if the carrying flag is False
+                    row = [state] + [actions[action] for action in ACTIONS]
+                    writer.writerow(row)
 
     def plot_q_table(self):
         for carrying in [False, True]:

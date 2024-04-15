@@ -39,11 +39,15 @@ class GridWorldSimulation:
 
             img = self.create_grid_image()
             cv2.imshow('Grid World', img)
-            key = cv2.waitKey(1)
+            key = cv2.waitKey(10)
             if key & 0xFF == ord('q'):
                 break
 
-            for agent in AGENT_NAMES:
+            # Process each agent's action as an individual step
+            for agent in ['red', 'blue', 'black']:  # Explicit ordering
+                if current_step >= self.total_steps:
+                    break  # Exit if the total number of steps is reached
+
                 action = self.agent.select_action(self.environment.get_state(), agent, self.current_policy)
                 if action:
                     self.action_count += 1
@@ -53,30 +57,27 @@ class GridWorldSimulation:
                     reward = self.compute_reward(action)
                     self.cumulative_rewards += reward
 
-                    # Comment out code for Q-learning
+                    # Update the Q-table
                     self.agent.update_q_table(new_state, action, reward, self.environment.get_state(), agent)
 
-                    # Comment out code for SARSA
-                    # new_action = self.agent.select_action(new_state, agent, self.current_policy)  # SARSA requires the next action
-                    # self.agent.update_q_table_sarsa(new_state, action, reward, self.environment.get_state(), new_action, agent)
+                self.reward_history.append(self.cumulative_rewards)
 
+                # Check if it's time to reset the environment based on the condition of all blocks delivered
+                if all(self.environment.blocks[loc] == CAPACITY for loc in DROPOFF_LOCATIONS):
+                    self.environment.reset()
+                    self.reset_counts.append(actions_since_last_reset)
+                    actions_since_last_reset = 0
 
-            self.reward_history.append(self.cumulative_rewards)
+                current_step += 1  # Increment the step counter after each action
 
-            if all(self.environment.blocks[loc] == CAPACITY for loc in DROPOFF_LOCATIONS):
-                self.environment.reset()
-                self.reset_counts.append(actions_since_last_reset)
-                actions_since_last_reset = 0
-
-            if current_step % 1000 == 0 or current_step == self.total_steps - 1:
-                csv_filename = f"q_table_policy_{self.subsequent_policy}_seed_{self.seed}.csv"
-                self.agent.save_q_table_to_csv(csv_filename)
-                self.agent.plot_q_table()
-
-            current_step += 1
+                if current_step % 1000 == 0 or current_step == self.total_steps - 1:
+                    # csv_filename = f"q_table_policy_{self.subsequent_policy}_seed_{self.seed}.csv"
+                    self.agent.save_q_table_to_csv()
+                    self.agent.plot_q_table()
 
         cv2.destroyAllWindows()
         return self.cumulative_rewards, self.action_count, self.reset_counts
+
 
     def create_grid_image(self, cell_size=50):
         img_size = GRID_SIZE * cell_size
