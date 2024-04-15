@@ -64,6 +64,15 @@ Expirement 3 with first seed, with SARSA as choice, with different alphas
 '''
 Expirement 3 with second seed, with SARSA as choice, with different alphas
 '''
-run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
 
+'''
+Expirement 4 with first seed, with SARSA as choice
+'''
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
+
+''' 
+Expirement 4 with second seed, with SARSA as choice
+'''
+# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
 
