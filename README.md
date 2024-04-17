@@ -26,4 +26,3 @@ python3 main.py
 
 ## Contributors:
 - **Fernando Recinos**
-- **Amine Rezki**
