@@ -1,17 +1,34 @@
 from constants import GRID_SIZE, CAPACITY, PICKUP_LOCATIONS, DROPOFF_LOCATIONS
 
 class Environment:
+    """
+    Environment class handles the simulation space where agents interact.
+    It keeps track of agent positions, the status of blocks at various locations,
+    and whether each agent is currently carrying a block.
+    """
     def __init__(self):
+        """
+        Initializes the environment with predefined positions of agents and blocks.
+        Also sets the initial carrying status of each agent to False.
+        """
         self.positions = {'red': (3, 3), 'blue': (3, 5), 'black': (3, 1)}
         self.blocks = {(5, 1): 5, (4, 2): 5, (2, 5): 5, (1, 1): 0, (1, 3): 0, (5, 4): 0}
         self.carrying = {'red': False, 'blue': False, 'black': False}
 
     def reset(self):
+        """
+        Resets the environment to the initial state with default positions,
+        block statuses, and carrying bool.
+        """
         self.positions = {'red': (3, 3), 'blue': (3, 5), 'black': (3, 1)}
         self.blocks = {(5, 1): 5, (4, 2): 5, (2, 5): 5, (1, 1): 0, (1, 3): 0, (5, 4): 0}
         self.carrying = {'red': False, 'blue': False, 'black': False}
 
     def get_state(self):
+        """
+        Returns the current state of the environment, including agent positions,
+        the status of blocks at locations, and whether agents are carrying blocks.
+        """
         return {
             'positions': self.positions,
             'blocks': self.blocks,
@@ -19,6 +36,10 @@ class Environment:
         }
 
     def apply_action(self, agent, action):
+        """
+        Applies an action taken by an agent, updating the environment state accordingly.
+        This includes moving the agent on the grid and handling pickup or dropoff actions.
+        """
         col, row = self.positions[agent]
         new_col, new_row = col, row
 
@@ -47,4 +68,8 @@ class Environment:
             self.blocks[(col, row)] += 1
 
     def occupied_positions(self):
+        """
+        Returns a set of all currently occupied positions on the grid by any agent,
+        used to prevent agents from moving into the same grid cell.
+        """
         return set(self.positions.values())

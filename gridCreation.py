@@ -9,7 +9,15 @@ from constants import GRID_SIZE, CAPACITY, PICKUP_LOCATIONS, DROPOFF_LOCATIONS
 from constants import REWARDS, AGENT_COLORS, AGENT_NAMES, alpha, gamma
 
 class GridWorldSimulation:
+    """
+    GridWorldSimulation manages the execution of the simulation environment,
+    orchestrating agent actions, policy changes, and interactions within the grid world.
+    It tracks the total number of simulation steps, manages policy changes, and collects performance metrics.
+    """
     def __init__(self, total_steps, initial_policy='PRandom', next_policy='PGreedy', change_step=500, seed=None):
+        """
+        Initializes the simulation with given parameters, sets up the environment, and prepares agents.
+        """
         self.total_steps = total_steps
         # self.initial_policy = initial_policy
         self.next_policy = next_policy
@@ -25,6 +33,10 @@ class GridWorldSimulation:
         self.action_count = 0
 
     def run(self):
+        """
+        Executes the simulation, managing policy switches and interactions within the environment.
+        Displays the grid and updates it according to agent actions until the simulation ends or is quit by the user.
+        """
         if self.seed is not None:
             np.random.seed(self.seed)
             random.seed(self.seed)
@@ -88,6 +100,10 @@ class GridWorldSimulation:
 
 
     def create_grid_image(self, cell_size=50):
+        """
+        Creates a visual representation of the grid world using OpenCV. 
+        Displays grid lines, agent positions, and statuses of pickup and dropoff locations.
+        """
         img_size = GRID_SIZE * cell_size
         grid_img = np.full((img_size, img_size, 3), 255, np.uint8)
 
@@ -113,6 +129,9 @@ class GridWorldSimulation:
         return grid_img
 
     def compute_reward(self, action):
+        """
+        Computes the reward for an action taken by an agent based on predefined reward values.
+        """
         if action == 'pickup' or action == 'dropoff':
             return REWARDS[action]
         else:
