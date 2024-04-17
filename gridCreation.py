@@ -9,10 +9,10 @@ from constants import GRID_SIZE, CAPACITY, PICKUP_LOCATIONS, DROPOFF_LOCATIONS
 from constants import REWARDS, AGENT_COLORS, AGENT_NAMES, alpha, gamma
 
 class GridWorldSimulation:
-    def __init__(self, total_steps, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=None):
+    def __init__(self, total_steps, initial_policy='PRandom', next_policy='PGreedy', change_step=500, seed=None):
         self.total_steps = total_steps
         # self.initial_policy = initial_policy
-        self.subsequent_policy = subsequent_policy
+        self.next_policy = next_policy
         self.change_step = change_step
         self.seed = seed
         self.environment = Environment()
@@ -42,7 +42,7 @@ class GridWorldSimulation:
 
             for agent in AGENT_NAMES:
                 if current_step == self.change_step:
-                    self.current_policy = self.subsequent_policy
+                    self.current_policy = self.next_policy
                     print(f"Switching to policy: {self.current_policy}")
 
                 action = self.agent.select_action(self.environment.get_state(), agent, self.current_policy)
@@ -67,7 +67,7 @@ class GridWorldSimulation:
                     break  # Exit if the total number of steps is reached
 
                 if current_step == self.change_step:
-                    self.current_policy = self.subsequent_policy
+                    self.current_policy = self.next_policy
                     print(f"Policy changed to {self.current_policy} at step {current_step}")
 
             self.reward_history.append(self.cumulative_rewards)

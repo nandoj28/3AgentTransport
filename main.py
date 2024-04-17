@@ -20,9 +20,9 @@ def plot_reset_statistics(reset_counts):
     plt.grid(True)
     plt.show()
 
-def run_and_plot_simulation(total_steps, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=None):
+def run_and_plot_simulation(total_steps, initial_policy='PRandom', next_policy='PGreedy', change_step=500, seed=None):
     # Initialize and run the simulation with dynamic policy switching
-    simulation = GridWorldSimulation(total_steps, initial_policy, subsequent_policy, change_step, seed)
+    simulation = GridWorldSimulation(total_steps, initial_policy, next_policy, change_step, seed)
     total_rewards, action_count, reset_counts = simulation.run()
     print(f"Total Rewards: {total_rewards}, Total Actions Taken: {action_count}")
 
@@ -34,45 +34,45 @@ def run_and_plot_simulation(total_steps, initial_policy='PRandom', subsequent_po
 '''
 Expirement 1 with first seed
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=42)
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=42)
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PRandom', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PGreedy', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=42)
 
 
 '''
 Expirement 1 with second seed
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PRandom', change_step=500, seed=43)
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PGreedy', change_step=500, seed=43)
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PRandom', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PGreedy', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=43)
 
 '''
 Expirement 2 with first seed
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=42)
 
 '''
 Expirement 2 with second seed
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=43)
 
 '''
 Expirement 3 with first seed, with SARSA as choice, with different alphas
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=42)
 
 '''
 Expirement 3 with second seed, with SARSA as choice, with different alphas
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=43)
 
 '''
 Expirement 4 with first seed, with SARSA as choice
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=42)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=42)
 
 ''' 
 Expirement 4 with second seed, with SARSA as choice
 '''
-# run_and_plot_simulation(9000, initial_policy='PRandom', subsequent_policy='PExploit', change_step=500, seed=43)
+# run_and_plot_simulation(9000, initial_policy='PRandom', next_policy='PExploit', change_step=500, seed=43)
 
